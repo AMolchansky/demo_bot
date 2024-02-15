@@ -9,9 +9,6 @@ import (
 	"os"
 )
 
-const helpCommand = "help"
-const listCommand = "list"
-
 func main() {
 	godotenv.Load()
 
@@ -37,23 +34,6 @@ func main() {
 	commander := commands.NewCommander(bot, productService)
 
 	for update := range updates {
-		if update.Message == nil {
-			continue
-		}
-
-		switch update.Message.Command() {
-		case helpCommand:
-			commander.Help(update.Message)
-		case listCommand:
-			commander.List(update.Message)
-		default:
-			commander.Default(update.Message)
-		}
-
-		if update.Message.Command() == "help" {
-
-			continue
-		}
-
+		commander.HandleUpdate(update)
 	}
 }

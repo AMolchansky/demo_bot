@@ -8,5 +8,11 @@ import (
 func (c *Commander) Default(inputMessage *tgbotapi.Message) {
 	log.Printf("[%s] %s", inputMessage.From.UserName, inputMessage.Text)
 
-	c.sendMessage(inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)
+	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)
+
+	_, err := c.bot.Send(msg)
+
+	if err != nil {
+		log.Panic(err)
+	}
 }
