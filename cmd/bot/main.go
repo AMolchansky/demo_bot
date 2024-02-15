@@ -1,9 +1,11 @@
 package main
 
 import (
+	"github.com/AMolchansky/demo_bot/internal/service/product"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -31,6 +33,8 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 
+	productService := product.NewService()
+
 	for update := range updates {
 		if update.Message == nil {
 			continue
@@ -40,7 +44,7 @@ func main() {
 		case helpCommand:
 			processHelpCommand(bot, update.Message)
 		case listCommand:
-			processListCommand(bot, update.Message)
+			processListCommand(bot, update.Message, productService)
 		default:
 			processDefaultBehavior(bot, update.Message)
 		}
@@ -60,8 +64,16 @@ func processHelpCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
 	)
 }
 
-func processListCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
-	sendMessage(bot, inputMessage.Chat.ID, "TBD")
+func processListCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message, productService *product.Service) {
+	outputMsg := strings.Builder{}
+	outputMsg.WriteString("Here all the products: \n\n")
+
+	products := productService.List()
+	for _, p := range products {
+		outputMsg.WriteString(p.Title + "\n")
+	}
+
+	sendMessage(bot, inputMessage.Chat.ID, outputMsg.String())
 }
 
 func processDefaultBehavior(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
