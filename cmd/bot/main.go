@@ -9,6 +9,7 @@ import (
 )
 
 const helpCommand = "help"
+const listCommand = "list"
 
 func main() {
 	godotenv.Load()
@@ -38,6 +39,8 @@ func main() {
 		switch update.Message.Command() {
 		case helpCommand:
 			processHelpCommand(bot, update.Message)
+		case listCommand:
+			processListCommand(bot, update.Message)
 		default:
 			processDefaultBehavior(bot, update.Message)
 		}
@@ -51,21 +54,28 @@ func main() {
 }
 
 func processHelpCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
-	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "/help - help")
+	sendMessage(bot, inputMessage.Chat.ID, ""+
+		"/help - help\n"+
+		"/list - list products",
+	)
+}
 
-	_, errSend := bot.Send(msg)
-	if errSend != nil {
-		log.Panic(errSend)
-	}
+func processListCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
+	sendMessage(bot, inputMessage.Chat.ID, "TBD")
 }
 
 func processDefaultBehavior(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
 	log.Printf("[%s] %s", inputMessage.From.UserName, inputMessage.Text)
 
-	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)
+	sendMessage(bot, inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)
+}
 
-	_, errSend := bot.Send(msg)
-	if errSend != nil {
-		log.Panic(errSend)
+func sendMessage(bot *tgbotapi.BotAPI, chatID int64, text string) {
+	msg := tgbotapi.NewMessage(chatID, text)
+
+	_, err := bot.Send(msg)
+
+	if err != nil {
+		log.Panic(err)
 	}
 }
