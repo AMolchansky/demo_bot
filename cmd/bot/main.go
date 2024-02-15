@@ -8,6 +8,8 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+const helpCommand = "help"
+
 func main() {
 	godotenv.Load()
 
@@ -29,16 +31,41 @@ func main() {
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
-		if update.Message != nil { // If we got a message
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "You wrote:"+update.Message.Text)
-			msg.ReplyToMessageID = update.Message.MessageID
-
-			_, errSend := bot.Send(msg)
-			if errSend != nil {
-				log.Panic(errSend)
-			}
+		if update.Message == nil {
+			continue
 		}
+
+		switch update.Message.Command() {
+		case helpCommand:
+			processHelpCommand(bot, update.Message)
+		default:
+			processDefaultBehavior(bot, update.Message)
+		}
+
+		if update.Message.Command() == "help" {
+
+			continue
+		}
+
+	}
+}
+
+func processHelpCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
+	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "/help - help")
+
+	_, errSend := bot.Send(msg)
+	if errSend != nil {
+		log.Panic(errSend)
+	}
+}
+
+func processDefaultBehavior(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
+	log.Printf("[%s] %s", inputMessage.From.UserName, inputMessage.Text)
+
+	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)
+
+	_, errSend := bot.Send(msg)
+	if errSend != nil {
+		log.Panic(errSend)
 	}
 }
