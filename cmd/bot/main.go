@@ -1,13 +1,12 @@
 package main
 
 import (
+	"github.com/AMolchansky/demo_bot/internal/app/commands"
 	"github.com/AMolchansky/demo_bot/internal/service/product"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
-	"strings"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 const helpCommand = "help"
@@ -35,6 +34,8 @@ func main() {
 
 	productService := product.NewService()
 
+	commander := commands.NewCommander(bot, productService)
+
 	for update := range updates {
 		if update.Message == nil {
 			continue
@@ -42,11 +43,11 @@ func main() {
 
 		switch update.Message.Command() {
 		case helpCommand:
-			processHelpCommand(bot, update.Message)
+			commander.Help(update.Message)
 		case listCommand:
-			processListCommand(bot, update.Message, productService)
+			commander.List(update.Message)
 		default:
-			processDefaultBehavior(bot, update.Message)
+			commander.Default(update.Message)
 		}
 
 		if update.Message.Command() == "help" {
@@ -54,40 +55,5 @@ func main() {
 			continue
 		}
 
-	}
-}
-
-func processHelpCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
-	sendMessage(bot, inputMessage.Chat.ID, ""+
-		"/help - help\n"+
-		"/list - list products",
-	)
-}
-
-func processListCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message, productService *product.Service) {
-	outputMsg := strings.Builder{}
-	outputMsg.WriteString("Here all the products: \n\n")
-
-	products := productService.List()
-	for _, p := range products {
-		outputMsg.WriteString(p.Title + "\n")
-	}
-
-	sendMessage(bot, inputMessage.Chat.ID, outputMsg.String())
-}
-
-func processDefaultBehavior(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
-	log.Printf("[%s] %s", inputMessage.From.UserName, inputMessage.Text)
-
-	sendMessage(bot, inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)
-}
-
-func sendMessage(bot *tgbotapi.BotAPI, chatID int64, text string) {
-	msg := tgbotapi.NewMessage(chatID, text)
-
-	_, err := bot.Send(msg)
-
-	if err != nil {
-		log.Panic(err)
 	}
 }
