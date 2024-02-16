@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func (pc *ProductCommander) Help(inputMessage *tgbotapi.Message) {
+func (pc *DummyProductCommander) Help(inputMessage *tgbotapi.Message) {
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, ""+
 		"/help__logistic__product - help\n"+
 		"/list__logistic__product - list products\n"+

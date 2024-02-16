@@ -12,7 +12,7 @@ type CallbackListData struct {
 	Offset int `json:"offset"`
 }
 
-func (pc *ProductCommander) CallbackList(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath) {
+func (pc *DummyProductCommander) CallbackList(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath) {
 	parsedData := CallbackListData{}
 
 	err := json.Unmarshal([]byte(callbackPath.CallbackData), &parsedData)

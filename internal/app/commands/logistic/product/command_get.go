@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func (pc *ProductCommander) Get(inputMessage *tgbotapi.Message) {
+func (pc *DummyProductCommander) Get(inputMessage *tgbotapi.Message) {
 	args := inputMessage.CommandArguments()
 
 	idx, err := strconv.Atoi(args)
@@ -15,7 +15,7 @@ func (pc *ProductCommander) Get(inputMessage *tgbotapi.Message) {
 		return
 	}
 
-	product, err := pc.productService.Get(idx)
+	product, err := pc.dummyProductService.Get(idx)
 	if err != nil {
 		log.Printf("fail to get product with ids %d: %v", idx, err)
 		return

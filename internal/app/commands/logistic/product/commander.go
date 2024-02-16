@@ -2,32 +2,38 @@ package product
 
 import (
 	"github.com/AMolchansky/demo_bot/internal/app/path"
-	"github.com/AMolchansky/demo_bot/internal/service/logistic/product"
+	service "github.com/AMolchansky/demo_bot/internal/service/logistic/product"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 )
 
-type ProductCommander struct {
-	bot            *tgbotapi.BotAPI
-	productService *product.Service
+type ProductCommander interface {
+	Help(inputMsg *tgbotapi.Message)
+	Get(inputMsg *tgbotapi.Message)
+	List(inputMsg *tgbotapi.Message)
+	Delete(inputMsg *tgbotapi.Message)
+
+	New(inputMsg *tgbotapi.Message)  // return error not implemented
+	Edit(inputMsg *tgbotapi.Message) // return error not implemented
 }
 
-type CommandData struct {
-	Offset int `json:"offset"`
+type DummyProductCommander struct {
+	bot                 *tgbotapi.BotAPI
+	dummyProductService *service.DummyProductService
 }
 
 func NewProductCommander(
 	bot *tgbotapi.BotAPI,
-) *ProductCommander {
-	productService := product.NewService()
+) *DummyProductCommander {
+	dummyProductService := service.NewDummyProductService()
 
-	return &ProductCommander{
-		bot:            bot,
-		productService: productService,
+	return &DummyProductCommander{
+		bot:                 bot,
+		dummyProductService: dummyProductService,
 	}
 }
 
-func (pc *ProductCommander) HandleCallback(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath) {
+func (pc *DummyProductCommander) HandleCallback(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath) {
 	switch callbackPath.CallbackName {
 	case "list":
 		pc.CallbackList(callback, callbackPath)
@@ -36,7 +42,7 @@ func (pc *ProductCommander) HandleCallback(callback *tgbotapi.CallbackQuery, cal
 	}
 }
 
-func (pc *ProductCommander) HandleCommand(msg *tgbotapi.Message, commandPath path.CommandPath) {
+func (pc *DummyProductCommander) HandleCommand(msg *tgbotapi.Message, commandPath path.CommandPath) {
 	switch commandPath.CommandName {
 	case "help":
 		pc.Help(msg)

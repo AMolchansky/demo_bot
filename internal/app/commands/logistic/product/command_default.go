@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func (pc *ProductCommander) Default(inputMessage *tgbotapi.Message) {
+func (pc *DummyProductCommander) Default(inputMessage *tgbotapi.Message) {
 	log.Printf("[%s] %s", inputMessage.From.UserName, inputMessage.Text)
 
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)

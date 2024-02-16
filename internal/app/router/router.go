@@ -35,8 +35,6 @@ func (c *Router) HandleUpdate(update tgbotapi.Update) {
 		}
 	}()
 
-	log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
 	switch {
 	case update.CallbackQuery != nil:
 		c.handleCallback(update.CallbackQuery)

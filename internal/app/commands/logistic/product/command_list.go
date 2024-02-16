@@ -8,18 +8,18 @@ import (
 	"strings"
 )
 
-func (pc *ProductCommander) List(inputMessage *tgbotapi.Message) {
+func (pc *DummyProductCommander) List(inputMessage *tgbotapi.Message) {
 	outputMsg := strings.Builder{}
 	outputMsg.WriteString("Here all the products: \n\n")
 
-	products := pc.productService.List()
+	products := pc.dummyProductService.List()
 	for _, p := range products {
 		outputMsg.WriteString(p.Title + "\n")
 	}
 
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, outputMsg.String())
 
-	serializedData, _ := json.Marshal(CommandData{ //TODO HANDLE ERROR
+	serializedData, _ := json.Marshal(CallbackListData{ //TODO HANDLE ERROR
 		Offset: 21,
 	})
 
