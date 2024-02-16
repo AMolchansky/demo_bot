@@ -1,18 +1,18 @@
-package commands
+package product
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 )
 
-func (c *Commander) Default(inputMessage *tgbotapi.Message) {
+func (pc *ProductCommander) Default(inputMessage *tgbotapi.Message) {
 	log.Printf("[%s] %s", inputMessage.From.UserName, inputMessage.Text)
 
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)
 
-	_, err := c.bot.Send(msg)
+	_, err := pc.bot.Send(msg)
 
 	if err != nil {
-		log.Panic(err)
+		log.Printf("ProductCommander.Help: error sending reply message to chat - %v", err)
 	}
 }
