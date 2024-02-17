@@ -12,7 +12,10 @@ func (pc *DummyProductCommander) List(inputMessage *tgbotapi.Message) {
 	outputMsg := strings.Builder{}
 	outputMsg.WriteString("Here all the products: \n\n")
 
-	products := pc.dummyProductService.List()
+	var cursor uint64 = 1
+	var offset uint64 = 10
+
+	products, _ := pc.dummyProductService.List(cursor, offset) //TODO HANDLE ERROR
 	for _, p := range products {
 		outputMsg.WriteString(p.Title + "\n")
 	}

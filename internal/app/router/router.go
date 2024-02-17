@@ -8,15 +8,14 @@ import (
 	"runtime/debug"
 )
 
-type Commander interface {
+type ICommander interface {
 	HandleCallback(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath)
-	HandleCommand(callback *tgbotapi.Message, commandPath path.CommandPath)
+	HandleCommand(message *tgbotapi.Message, commandPath path.CommandPath)
 }
 
 type Router struct {
 	bot               *tgbotapi.BotAPI
-	logisticCommander Commander
-	productCommander  Commander
+	logisticCommander ICommander
 }
 
 func NewRouter(

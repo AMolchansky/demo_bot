@@ -1,13 +1,11 @@
 package product
 
-var allProducts = []Product{
+import "github.com/AMolchansky/demo_bot/internal/model/logistic"
+
+var allProducts = []logistic.Product{
 	{Title: "one"},
 	{Title: "two"},
 	{Title: "three"},
 	{Title: "four"},
 	{Title: "five"},
-}
-
-type Product struct {
-	Title string
 }

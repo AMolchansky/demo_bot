@@ -12,9 +12,8 @@ type ProductCommander interface {
 	Get(inputMsg *tgbotapi.Message)
 	List(inputMsg *tgbotapi.Message)
 	Delete(inputMsg *tgbotapi.Message)
-
-	New(inputMsg *tgbotapi.Message)  // return error not implemented
-	Edit(inputMsg *tgbotapi.Message) // return error not implemented
+	New(inputMsg *tgbotapi.Message)
+	Edit(inputMsg *tgbotapi.Message)
 }
 
 type DummyProductCommander struct {
@@ -50,6 +49,12 @@ func (pc *DummyProductCommander) HandleCommand(msg *tgbotapi.Message, commandPat
 		pc.List(msg)
 	case "get":
 		pc.Get(msg)
+	case "new":
+		pc.New(msg)
+	case "delete":
+		pc.Delete(msg)
+	case "edit":
+		pc.Edit(msg)
 	default:
 		pc.Default(msg)
 	}
