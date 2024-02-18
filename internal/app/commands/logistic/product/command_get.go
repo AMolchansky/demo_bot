@@ -9,15 +9,15 @@ import (
 func (pc *DummyProductCommander) Get(inputMessage *tgbotapi.Message) {
 	args := inputMessage.CommandArguments()
 
-	idx, err := strconv.Atoi(args)
+	productId, err := strconv.Atoi(args)
 	if err != nil {
 		log.Println("wrong args", args)
 		return
 	}
 
-	product, err := pc.dummyProductService.Get(idx)
+	product, err := pc.dummyProductService.Describe(uint64(productId))
 	if err != nil {
-		log.Printf("fail to get product with ids %d: %v", idx, err)
+		log.Printf("fail to get product with ids %d: %v", productId, err)
 		return
 	}
 
