@@ -6,19 +6,19 @@ import (
 )
 
 var allProducts = []logistic.Product{
-	{Title: "one"},
-	{Title: "two"},
-	{Title: "three"},
-	{Title: "four"},
-	{Title: "five"},
+	{Id: 1, Title: "one"},
+	{Id: 2, Title: "two"},
+	{Id: 3, Title: "three"},
+	{Id: 4, Title: "four"},
+	{Id: 5, Title: "five"},
 }
 
-func getProductIndex(productId uint64) (int, error) {
-	for index := range allProducts {
-		if uint64(index) == productId {
-			return index, nil
+func getProductById(id uint64) (logistic.Product, error) {
+	for _, product := range allProducts {
+		if product.Id == id {
+			return product, nil
 		}
 	}
 
-	return -1, errors.New("product not found")
+	return logistic.Product{}, errors.New("product not found")
 }

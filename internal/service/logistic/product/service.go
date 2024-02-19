@@ -29,42 +29,58 @@ func (s *DummyProductService) List(cursor uint64, limit uint64) ([]logistic.Prod
 }
 
 func (s *DummyProductService) Describe(productId uint64) (*logistic.Product, error) {
-	productIndex, err := getProductIndex(productId)
+	product, err := getProductById(productId)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &allProducts[productIndex], nil
+	return &product, nil
 }
 
 func (s *DummyProductService) Create(product logistic.Product) (uint64, error) {
+	var lastProductId uint64
+	if len(allProducts) > 1 {
+		lastProductId = allProducts[len(allProducts)-1].Id
+	} else {
+		lastProductId = 1
+	}
+
+	product.Id = lastProductId + 1
+
 	allProducts = append(allProducts, product)
 
-	productId := uint64(len(allProducts) - 1)
-
-	return productId, nil
+	return product.Id, nil
 }
 
-func (s *DummyProductService) Update(productID uint64, product logistic.Product) error {
-	// find old product from allProducts
+func (s *DummyProductService) Update(productId uint64, product logistic.Product) error {
+	_, err := getProductById(productId)
 
-	// if not found return error
+	if err != nil {
+		return err
+	}
 
-	// remove old product
-	// insert instead of old product new from arg
+	for i, existProduct := range allProducts {
+		if existProduct.Id == productId {
+			allProducts[i] = product
+		}
+	}
 
 	return nil
 }
 
 func (s *DummyProductService) Remove(productId uint64) (bool, error) {
-	productIndex, err := getProductIndex(productId)
+	_, err := getProductById(productId)
 
 	if err != nil {
 		return false, err
 	}
 
-	//allProducts[productIndex] = nil TODO: добавить в продукты айдишники имитируя работу с бд
+	for i, product := range allProducts {
+		if product.Id == productId {
+			allProducts = append(allProducts[:i], allProducts[i+1:]...)
+		}
+	}
 
 	return true, nil
 }
