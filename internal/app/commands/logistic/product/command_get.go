@@ -2,7 +2,6 @@ package product
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"log"
 	"strconv"
 )
 
@@ -11,20 +10,15 @@ func (pc *DummyProductCommander) Get(inputMessage *tgbotapi.Message) {
 
 	productId, err := strconv.Atoi(args)
 	if err != nil {
-		log.Println("wrong args", args)
+		pc.sendMessage(inputMessage.Chat.ID, "Invalid product id", "ProductCommander.Get")
 		return
 	}
 
 	product, err := pc.dummyProductService.Describe(uint64(productId))
 	if err != nil {
-		log.Printf("fail to get product with ids %d: %v", productId, err)
+		pc.sendMessage(inputMessage.Chat.ID, "Product not found", "ProductCommander.Get")
 		return
 	}
 
-	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, product.Title)
-
-	_, err = pc.bot.Send(msg)
-	if err != nil {
-		log.Printf("ProductCommander.Get: error sending reply message to chat - %v", err)
-	}
+	pc.sendMessage(inputMessage.Chat.ID, product.Title, "ProductCommander.Get")
 }

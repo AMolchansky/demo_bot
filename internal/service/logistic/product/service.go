@@ -1,6 +1,8 @@
 package product
 
-import "github.com/AMolchansky/demo_bot/internal/model/logistic"
+import (
+	"github.com/AMolchansky/demo_bot/internal/model/logistic"
+)
 
 type ProductService interface {
 	Describe(productID uint64) (*logistic.Product, error)
@@ -27,17 +29,21 @@ func (s *DummyProductService) List(cursor uint64, limit uint64) ([]logistic.Prod
 }
 
 func (s *DummyProductService) Describe(productId uint64) (*logistic.Product, error) {
-	// find products in allProducts
+	productIndex, err := getProductIndex(productId)
 
-	// if not found return error
+	if err != nil {
+		return nil, err
+	}
 
-	return &allProducts[productId], nil
+	return &allProducts[productIndex], nil
 }
 
 func (s *DummyProductService) Create(product logistic.Product) (uint64, error) {
-	// add to all products product from arg
+	allProducts = append(allProducts, product)
 
-	return 1, nil
+	productId := uint64(len(allProducts) - 1)
+
+	return productId, nil
 }
 
 func (s *DummyProductService) Update(productID uint64, product logistic.Product) error {
@@ -52,11 +58,13 @@ func (s *DummyProductService) Update(productID uint64, product logistic.Product)
 }
 
 func (s *DummyProductService) Remove(productId uint64) (bool, error) {
-	// find product in allProducts
+	productIndex, err := getProductIndex(productId)
 
-	// if not found return error
+	if err != nil {
+		return false, err
+	}
 
-	// remove from allProducts
+	//allProducts[productIndex] = nil TODO: добавить в продукты айдишники имитируя работу с бд
 
 	return true, nil
 }

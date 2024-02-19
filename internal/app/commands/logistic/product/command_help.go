@@ -9,7 +9,9 @@ func (pc *DummyProductCommander) Help(inputMessage *tgbotapi.Message) {
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, ""+
 		"/help__logistic__product - help\n"+
 		"/list__logistic__product - list products\n"+
-		"/get__logistic__product - get product info",
+		"/new__logistic__product [title:value] - create new product\n"+
+		"/delete__logistic__product [id] - create new product\n"+
+		"/get__logistic__product [id] - get product info",
 	)
 
 	_, err := pc.bot.Send(msg)

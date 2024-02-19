@@ -59,3 +59,12 @@ func (pc *DummyProductCommander) HandleCommand(msg *tgbotapi.Message, commandPat
 		pc.Default(msg)
 	}
 }
+
+func (pc *DummyProductCommander) sendMessage(chatID int64, msgText string, logTitle string) {
+	msg := tgbotapi.NewMessage(chatID, msgText)
+
+	_, err := pc.bot.Send(msg)
+	if err != nil {
+		log.Printf(logTitle+": Error sending reply message to chat - %v", err)
+	}
+}
