@@ -1,6 +1,7 @@
 package product
 
 import (
+	"errors"
 	"github.com/AMolchansky/demo_bot/internal/model/logistic"
 )
 
@@ -20,12 +21,15 @@ func NewDummyProductService() *DummyProductService {
 }
 
 func (s *DummyProductService) List(cursor uint64, limit uint64) ([]logistic.Product, error) {
-	// slice allProducts using cursor limit
+	paginatedProducts := getPaginatedProducts(allProducts, int(limit))
 
-	// if limit more than maximum size of products => good
-	// if cursor more than limit return error
+	for page, products := range paginatedProducts {
+		if uint64(page) == cursor {
+			return products, nil
+		}
+	}
 
-	return allProducts, nil
+	return []logistic.Product{}, errors.New("invalid page")
 }
 
 func (s *DummyProductService) Describe(productId uint64) (*logistic.Product, error) {

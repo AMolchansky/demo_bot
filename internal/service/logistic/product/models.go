@@ -22,3 +22,17 @@ func getProductById(id uint64) (logistic.Product, error) {
 
 	return logistic.Product{}, errors.New("product not found")
 }
+
+func getPaginatedProducts(products []logistic.Product, pageSize int) [][]logistic.Product {
+	var result [][]logistic.Product
+
+	for i := 0; i < len(products); i += pageSize {
+		limitTo := i + pageSize
+		if limitTo > len(products) {
+			limitTo = len(products)
+		}
+		result = append(result, products[i:limitTo])
+	}
+
+	return result
+}
