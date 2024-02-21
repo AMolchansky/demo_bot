@@ -24,7 +24,7 @@ func (s *DummyProductService) List(cursor uint64, limit uint64) ([]logistic.Prod
 	paginatedProducts := getPaginatedProducts(allProducts, int(limit))
 
 	for page, products := range paginatedProducts {
-		if uint64(page) == cursor {
+		if uint64(page) == cursor-1 {
 			return products, nil
 		}
 	}

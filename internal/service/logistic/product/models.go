@@ -11,6 +11,8 @@ var allProducts = []logistic.Product{
 	{Id: 3, Title: "three"},
 	{Id: 4, Title: "four"},
 	{Id: 5, Title: "five"},
+	{Id: 6, Title: "six"},
+	{Id: 7, Title: "seven"},
 }
 
 func getProductById(id uint64) (logistic.Product, error) {

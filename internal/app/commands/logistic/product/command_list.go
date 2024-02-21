@@ -2,6 +2,7 @@ package product
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/AMolchansky/demo_bot/internal/app/path"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
@@ -10,38 +11,58 @@ import (
 
 func (pc *DummyProductCommander) List(inputMessage *tgbotapi.Message) {
 	outputMsg := strings.Builder{}
-	outputMsg.WriteString("Here all the products: \n\n")
 
 	var cursor uint64 = 1
-	var offset uint64 = 10
+	var offset uint64 = 5
 
-	products, _ := pc.dummyProductService.List(cursor, offset) //TODO HANDLE ERROR
+	products, errIndex := pc.dummyProductService.List(cursor, offset)
+
+	if errIndex != nil {
+		pc.sendMessage(inputMessage.Chat.ID, "Invalid page", "ProductCommander.Get")
+		return
+	}
+
+	if len(products) == 0 {
+		pc.sendMessage(inputMessage.Chat.ID, "Products not found", "ProductCommander.Get")
+		return
+	}
+
 	for _, p := range products {
-		outputMsg.WriteString(p.Title + "\n")
+		outputMsg.WriteString(fmt.Sprintf("[ID: %d] %s \n", p.Id, p.Title))
 	}
 
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, outputMsg.String())
 
-	serializedData, _ := json.Marshal(CallbackListData{ //TODO HANDLE ERROR
-		Offset: 21,
-	})
+	// check is next page available
+	_, errIndex = pc.dummyProductService.List(cursor+1, offset)
+	if errIndex == nil {
+		nextPageSerializedData, errMarshal := json.Marshal(CallbackListData{
+			Page:   int(cursor + 1),
+			Offset: int(offset),
+		})
 
-	callbackPath := path.CallbackPath{
-		Domain:       "logistic",
-		Subdomain:    "product",
-		CallbackName: "list",
-		CallbackData: string(serializedData),
+		if errMarshal != nil {
+			log.Printf("ProductCommander.List: error json.Marshal next page CallbackListData - %v", errMarshal)
+			return
+		}
+
+		nextPageCallbackPath := path.CallbackPath{
+			Domain:       "logistic",
+			Subdomain:    "product",
+			CallbackName: "list",
+			CallbackData: string(nextPageSerializedData),
+		}
+
+		msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+			tgbotapi.NewInlineKeyboardRow(
+				tgbotapi.NewInlineKeyboardButtonData("Next page", nextPageCallbackPath.String()),
+			),
+		)
 	}
 
-	msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPath.String()),
-		),
-	)
+	_, errSend := pc.bot.Send(msg)
 
-	_, err := pc.bot.Send(msg)
-
-	if err != nil {
-		log.Printf("ProductCommander.List: error sending reply message to chat - %v", err)
+	if errSend != nil {
+		log.Printf("ProductCommander.List: error sending reply message to chat - %v", errSend)
 	}
 }
