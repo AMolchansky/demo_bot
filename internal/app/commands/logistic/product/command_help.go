@@ -11,7 +11,8 @@ func (pc *DummyProductCommander) Help(inputMessage *tgbotapi.Message) {
 		"/list__logistic__product - list products\n"+
 		"/new__logistic__product [title:value] - create new product\n"+
 		"/delete__logistic__product [id] - create new product\n"+
-		"/get__logistic__product [id] - get product info",
+		"/get__logistic__product [id] - get product info\n"+
+		"/edit__logistic__product [id:value] [title:new_value] - edit exist product",
 	)
 
 	_, err := pc.bot.Send(msg)

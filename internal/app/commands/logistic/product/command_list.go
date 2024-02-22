@@ -2,7 +2,6 @@ package product
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/AMolchansky/demo_bot/internal/app/path"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
@@ -28,7 +27,7 @@ func (pc *DummyProductCommander) List(inputMessage *tgbotapi.Message) {
 	}
 
 	for _, p := range products {
-		outputMsg.WriteString(fmt.Sprintf("[ID: %d] %s \n", p.Id, p.Title))
+		outputMsg.WriteString(p.String())
 	}
 
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, outputMsg.String())

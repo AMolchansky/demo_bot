@@ -21,7 +21,6 @@ func (pc *DummyProductCommander) New(inputMessage *tgbotapi.Message) {
 		return
 	}
 
-	// TODO: переделать через дополнительный ввод нового сообщения как поля Title и тд, сделать общую логику если появятся новые поля
 	product := logistic.Product{}
 	for _, field := range fields {
 		parts := strings.SplitN(field, ":", 2)
